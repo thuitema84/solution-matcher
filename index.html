@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Solution Matcher</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    select, button { margin-top: 10px; padding: 8px; font-size: 1rem; width: 100%; }
+    .card { border: 1px solid #ddd; padding: 16px; margin-top: 20px; border-radius: 8px; }
+    .card ul { margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Solution Matcher</h1>
+  <label for="goal">Select a business goal:</label>
+  <select id="goal">
+    <option value="">--Choose an option--</option>
+    <option value="uptime">Ensure Continuous Uptime</option>
+    <option value="overhead">Reduce IT Overhead</option>
+    <option value="scalability">Rapid Scalability</option>
+    <option value="compliance">Meet Compliance Requirements</option>
+    <option value="performance">Improve End-User Performance</option>
+    <option value="budgeting">Predictable Budgeting</option>
+  </select>
+  <button onclick="matchSolutions()">Match Solutions</button>
+
+  <div id="results" class="card" style="display:none;">
+    <h3>Recommended Solutions:</h3>
+    <ul id="solutionList"></ul>
+    <p id="note"></p>
+  </div>
+
+  <script>
+    const solutionMap = {
+      uptime: {
+        solutions: ["DRaaS", "Colocation with Redundancy"],
+        note: "High availability and recovery plans reduce business risk."
+      },
+      overhead: {
+        solutions: ["Managed Services", "IaaS"],
+        note: "Offloads infrastructure ops to Flexential experts."
+      },
+      scalability: {
+        solutions: ["Hybrid IT", "Private Cloud"],
+        note: "Enables elastic scaling without overbuying infrastructure."
+      },
+      compliance: {
+        solutions: ["Secure Colocation", "Managed Security Services"],
+        note: "Supports HIPAA, SOC 2, PCI with built-in safeguards."
+      },
+      performance: {
+        solutions: ["Edge Data Centers", "CDN", "Load Balancers"],
+        note: "Brings compute closer to users, improving performance."
+      },
+      budgeting: {
+        solutions: ["IaaS", "Bundled Managed Services"],
+        note: "Usage-based or flat rate options to support cost predictability."
+      }
+    };
+
+    function matchSolutions() {
+      const goal = document.getElementById("goal").value;
+      const resultBox = document.getElementById("results");
+      const list = document.getElementById("solutionList");
+      const note = document.getElementById("note");
+
+      if (!goal) return;
+
+      const result = solutionMap[goal];
+      list.innerHTML = result.solutions.map(s => `<li>${s}</li>`).join('');
+      note.textContent = result.note;
+      resultBox.style.display = "block";
+    }
+  </script>
+</body>
+</html>
