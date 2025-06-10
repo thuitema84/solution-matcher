@@ -1,10 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Flexential Solution Matcher</title>
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Red+Hat+Display:wght@700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -22,10 +22,17 @@
       margin-bottom: 0.5em;
     }
     p { margin-bottom: 1rem; }
-    .checkbox-group label {
+    .checkbox-group label, .select-group label {
       display: block;
       margin: 0.5rem 0;
       cursor: pointer;
+    }
+    select {
+      width: 100%;
+      padding: 8px;
+      font-size: 1rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
     }
     button {
       background-color: #005F95;
@@ -36,6 +43,7 @@
       border-radius: 4px;
       cursor: pointer;
       transition: background .2s ease;
+      margin-top: 1rem;
     }
     button:hover {
       background-color: #00457A;
@@ -64,7 +72,35 @@
 </head>
 <body>
   <h1>Flexential Solution Matcher</h1>
-  <p>Select one or more business goals to match with Flexential solutions:</p>
+  <p>Select customer criteria to match with recommended solutions:</p>
+
+  <div class="select-group">
+    <label>Industry:</label>
+    <select id="industry">
+      <option value="">--Select--</option>
+      <option value="healthcare">Healthcare</option>
+      <option value="saas">SaaS</option>
+      <option value="retail">Retail</option>
+    </select>
+
+    <label>Compliance Needs:</label>
+    <select id="compliance">
+      <option value="">--Select--</option>
+      <option value="hipaa">HIPAA</option>
+      <option value="pci">PCI</option>
+      <option value="none">None</option>
+    </select>
+
+    <label>Urgency Level:</label>
+    <select id="urgency">
+      <option value="">--Select--</option>
+      <option value="now">Immediate</option>
+      <option value="planning">Planning Phase</option>
+    </select>
+  </div>
+
+  <hr style="margin: 20px 0;">
+
   <div class="checkbox-group">
     <label><input type="checkbox" value="uptime"> Ensure Continuous Uptime</label>
     <label><input type="checkbox" value="overhead"> Reduce IT Overhead</label>
@@ -73,6 +109,7 @@
     <label><input type="checkbox" value="performance"> Improve End-User Performance</label>
     <label><input type="checkbox" value="budgeting"> Predictable Budgeting</label>
   </div>
+
   <button onclick="matchSolutions()">Match Solutions</button>
 
   <div id="results" class="card" style="display:none;">
@@ -89,20 +126,37 @@
       scalability: { solutions: ["Hybrid IT", "Private Cloud"], note: "Enables elastic scaling without overbuying infrastructure." },
       compliance: { solutions: ["Secure Colocation", "Managed Security Services"], note: "Supports HIPAA, SOC 2, PCI with built-in safeguards." },
       performance: { solutions: ["Edge Data Centers", "CDN", "Load Balancers"], note: "Brings compute closer to users, improving performance." },
-      budgeting: { solutions: ["IaaS", "Bundled Managed Services"], note: "Usage-based or flat rate options support cost predictability." }
+      budgeting: { solutions: ["IaaS", "Bundled Managed Services"], note: "Usage-based or flat rate options support cost predictability." },
+      healthcare: { solutions: ["Secure Colocation", "DRaaS"], note: "Supports HIPAA and patient data protection standards." },
+      saas: { solutions: ["IaaS", "Hybrid IT"], note: "Supports scalable delivery and multi-tenant efficiency." },
+      retail: { solutions: ["CDN", "Edge Data Centers"], note: "Enhances customer experience with lower latency." },
+      hipaa: { solutions: ["Secure Colocation", "Managed Security Services"], note: "HIPAA requires encrypted and monitored environments." },
+      pci: { solutions: ["Secure Colocation", "DRaaS"], note: "PCI DSS mandates secure infrastructure and auditability." },
+      now: { solutions: ["DRaaS", "Managed Services"], note: "Immediate needs require low-lift, high-impact deployment." },
+      planning: { solutions: ["Hybrid IT", "Private Cloud"], note: "Ideal for staged migrations and long-term growth." }
     };
 
     function matchSolutions() {
-      const selected = Array.from(document.querySelectorAll('.checkbox-group input:checked')).map(cb => cb.value);
+      const selectedGoals = Array.from(document.querySelectorAll('.checkbox-group input:checked')).map(cb => cb.value);
+      const industry = document.getElementById('industry').value;
+      const compliance = document.getElementById('compliance').value;
+      const urgency = document.getElementById('urgency').value;
+
+      const filters = [...selectedGoals, industry, compliance, urgency].filter(Boolean);
       const allSolutions = {}, notes = [];
-      selected.forEach(goal => {
-        solutionMap[goal].solutions.forEach(s => allSolutions[s] = (allSolutions[s] || 0) + 1);
-        notes.push(solutionMap[goal].note);
+
+      filters.forEach(key => {
+        const entry = solutionMap[key];
+        if (entry) {
+          entry.solutions.forEach(s => allSolutions[s] = (allSolutions[s] || 0) + 1);
+          notes.push(entry.note);
+        }
       });
+
       const sorted = Object.keys(allSolutions).sort((a,b)=>allSolutions[b]-allSolutions[a]);
       document.getElementById('solutionList').innerHTML = sorted.map(s=>`<li>${s}</li>`).join('');
       document.getElementById('noteList').innerHTML = [...new Set(notes)].map(n=>`<li>${n}</li>`).join('');
-      document.getElementById('results').style.display = selected.length ? 'block' : 'none';
+      document.getElementById('results').style.display = filters.length ? 'block' : 'none';
     }
   </script>
 </body>
