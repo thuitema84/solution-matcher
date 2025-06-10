@@ -21,7 +21,6 @@
       color: #002D5A;
       margin-bottom: 0.5em;
     }
-    p { margin-bottom: 1rem; }
     .checkbox-group label, .select-group label {
       display: block;
       margin: 0.5rem 0;
@@ -68,6 +67,19 @@
       margin-bottom: 10px;
     }
     ul { margin-left: 1.2rem; }
+    details {
+      margin-top: 0.5rem;
+      cursor: pointer;
+    }
+    summary {
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .explanation {
+      font-size: 0.9rem;
+      margin-top: 0.2rem;
+      color: #444;
+    }
   </style>
 </head>
 <body>
@@ -114,12 +126,27 @@
 
   <div id="results" class="card" style="display:none;">
     <h3>Recommended Solutions:</h3>
-    <ul id="solutionList"></ul>
+    <div id="solutionList"></div>
     <h4>Why These Fit:</h4>
     <ul id="noteList"></ul>
   </div>
 
   <script>
+    const explainers = {
+      "DRaaS": "Disaster Recovery as a Service. Keeps your critical systems recoverable in the event of a failure. Think fire drill but with data and infrastructure.",
+      "Colocation with Redundancy": "Secure, monitored space in a data center with backup power/networking. Like a high-security condo for your servers.",
+      "Managed Services": "We manage your infrastructure so your team can focus on strategic work instead of patching servers at midnight.",
+      "IaaS": "Infrastructure as a Service. Rent virtual servers, storage, and networking. Control without the overhead of owning.",
+      "Hybrid IT": "Mix of on-prem, colo, and cloud. Lets you run workloads wherever they fit best without being locked in.",
+      "Private Cloud": "Cloud built just for you. More control and security than public cloud; ideal for sensitive workloads.",
+      "Secure Colocation": "Colo, but with enhanced compliance controls and access restrictions. Good for HIPAA/PCI-sensitive data.",
+      "Managed Security Services": "We monitor, detect, and respond to security threats so your team doesn’t have to stay on-call.",
+      "Edge Data Centers": "Data centers closer to your end users. Improves speed and performance by minimizing travel distance.",
+      "CDN": "Content Delivery Network. Distributes static content across a global network for faster access anywhere.",
+      "Load Balancers": "Distributes traffic across multiple servers. Prevents overload and ensures smooth user experience.",
+      "Bundled Managed Services": "Packaged services that include monitoring, backup, and patching in one contract."
+    };
+
     const solutionMap = {
       uptime: { solutions: ["DRaaS", "Colocation with Redundancy"], note: "High availability and recovery plans reduce business risk." },
       overhead: { solutions: ["Managed Services", "IaaS"], note: "Offloads infrastructure ops to Flexential experts." },
@@ -154,7 +181,9 @@
       });
 
       const sorted = Object.keys(allSolutions).sort((a,b)=>allSolutions[b]-allSolutions[a]);
-      document.getElementById('solutionList').innerHTML = sorted.map(s=>`<li>${s}</li>`).join('');
+      document.getElementById('solutionList').innerHTML = sorted.map(s =>
+        `<details><summary>${s}</summary><div class="explanation">${explainers[s] || 'More info coming soon.'}</div></details>`
+      ).join('');
       document.getElementById('noteList').innerHTML = [...new Set(notes)].map(n=>`<li>${n}</li>`).join('');
       document.getElementById('results').style.display = filters.length ? 'block' : 'none';
     }
