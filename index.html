@@ -12,7 +12,7 @@
       background: #F7FAFC;
       color: #333;
       padding: 30px;
-      max-width: 720px;
+      max-width: 960px;
       margin: auto;
     }
     h1 {
@@ -21,64 +21,57 @@
       color: #002D5A;
       margin-bottom: 0.5em;
     }
-    .checkbox-group label, .select-group label {
-      display: block;
-      margin: 0.5rem 0;
-      cursor: pointer;
-    }
-    select {
+    select, button {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
+      margin-bottom: 1rem;
       font-size: 1rem;
       border-radius: 4px;
       border: 1px solid #ccc;
+    }
+    .checkbox-group label {
+      display: block;
+      margin: 0.3rem 0;
     }
     button {
       background-color: #005F95;
       color: #fff;
       border: none;
-      padding: .7rem 1.2rem;
-      font-size: 1rem;
-      border-radius: 4px;
       cursor: pointer;
-      transition: background .2s ease;
-      margin-top: 1rem;
     }
     button:hover {
       background-color: #00457A;
     }
-    .card {
+    .tile-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .tile {
       background: white;
       border: 1px solid #E2E8F0;
       border-radius: 8px;
-      padding: 20px;
-      margin-top: 20px;
+      padding: 16px;
+      flex: 1 1 300px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      opacity: 0;
-      transform: translateY(10px);
-      animation: fadeIn 0.3s forwards ease-in-out;
     }
-    @keyframes fadeIn {
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .card h3 {
+    .tile h3 {
       font-family: 'Red Hat Display', sans-serif;
       color: #002D5A;
-      margin-bottom: 10px;
+      margin: 0 0 8px 0;
     }
-    ul { margin-left: 1.2rem; }
-    details {
-      margin-top: 0.5rem;
-      cursor: pointer;
+    .tags {
+      margin-top: 8px;
     }
-    summary {
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .explanation {
-      font-size: 0.9rem;
-      margin-top: 0.2rem;
-      color: #444;
+    .tag {
+      display: inline-block;
+      background-color: #D1ECF1;
+      color: #005F95;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      margin-right: 6px;
     }
   </style>
 </head>
@@ -86,32 +79,28 @@
   <h1>Flexential Solution Matcher</h1>
   <p>Select customer criteria to match with recommended solutions:</p>
 
-  <div class="select-group">
-    <label>Industry:</label>
-    <select id="industry">
-      <option value="">--Select--</option>
-      <option value="healthcare">Healthcare</option>
-      <option value="saas">SaaS</option>
-      <option value="retail">Retail</option>
-    </select>
+  <label>Industry:</label>
+  <select id="industry">
+    <option value="">--Select--</option>
+    <option value="healthcare">Healthcare</option>
+    <option value="saas">SaaS</option>
+    <option value="retail">Retail</option>
+  </select>
 
-    <label>Compliance Needs:</label>
-    <select id="compliance">
-      <option value="">--Select--</option>
-      <option value="hipaa">HIPAA</option>
-      <option value="pci">PCI</option>
-      <option value="none">None</option>
-    </select>
+  <label>Compliance Needs:</label>
+  <select id="compliance">
+    <option value="">--Select--</option>
+    <option value="hipaa">HIPAA</option>
+    <option value="pci">PCI</option>
+    <option value="none">None</option>
+  </select>
 
-    <label>Urgency Level:</label>
-    <select id="urgency">
-      <option value="">--Select--</option>
-      <option value="now">Immediate</option>
-      <option value="planning">Planning Phase</option>
-    </select>
-  </div>
-
-  <hr style="margin: 20px 0;">
+  <label>Urgency Level:</label>
+  <select id="urgency">
+    <option value="">--Select--</option>
+    <option value="now">Immediate</option>
+    <option value="planning">Planning Phase</option>
+  </select>
 
   <div class="checkbox-group">
     <label><input type="checkbox" value="uptime"> Ensure Continuous Uptime</label>
@@ -124,43 +113,53 @@
 
   <button onclick="matchSolutions()">Match Solutions</button>
 
-  <div id="results" class="card" style="display:none;">
-    <h3>Recommended Solutions:</h3>
-    <div id="solutionList"></div>
-    <h4>Why These Fit:</h4>
-    <ul id="noteList"></ul>
-  </div>
+  <div id="tiles" class="tile-container"></div>
 
   <script>
     const explainers = {
-      "DRaaS": "Disaster Recovery as a Service. Keeps your critical systems recoverable in the event of a failure. Think fire drill but with data and infrastructure.",
-      "Colocation with Redundancy": "Secure, monitored space in a data center with backup power/networking. Like a high-security condo for your servers.",
-      "Managed Services": "We manage your infrastructure so your team can focus on strategic work instead of patching servers at midnight.",
-      "IaaS": "Infrastructure as a Service. Rent virtual servers, storage, and networking. Control without the overhead of owning.",
-      "Hybrid IT": "Mix of on-prem, colo, and cloud. Lets you run workloads wherever they fit best without being locked in.",
-      "Private Cloud": "Cloud built just for you. More control and security than public cloud; ideal for sensitive workloads.",
-      "Secure Colocation": "Colo, but with enhanced compliance controls and access restrictions. Good for HIPAA/PCI-sensitive data.",
-      "Managed Security Services": "We monitor, detect, and respond to security threats so your team doesn’t have to stay on-call.",
-      "Edge Data Centers": "Data centers closer to your end users. Improves speed and performance by minimizing travel distance.",
-      "CDN": "Content Delivery Network. Distributes static content across a global network for faster access anywhere.",
-      "Load Balancers": "Distributes traffic across multiple servers. Prevents overload and ensures smooth user experience.",
-      "Bundled Managed Services": "Packaged services that include monitoring, backup, and patching in one contract."
+      "DRaaS": "Disaster Recovery as a Service. Keeps your critical systems recoverable in the event of a failure.",
+      "Colocation with Redundancy": "Secure, monitored space in a data center with backup power/networking.",
+      "Managed Services": "We manage your infrastructure so your team can focus on strategic work.",
+      "IaaS": "Rent virtual servers, storage, and networking. Control without the overhead of owning.",
+      "Hybrid IT": "Mix of on-prem, colo, and cloud. Run workloads wherever they fit best.",
+      "Private Cloud": "More control and security than public cloud; ideal for sensitive workloads.",
+      "Secure Colocation": "Colo with enhanced compliance controls and access restrictions.",
+      "Managed Security Services": "We monitor, detect, and respond to security threats.",
+      "Edge Data Centers": "Data centers closer to your users, reducing latency.",
+      "CDN": "Distributes static content across global network for faster access.",
+      "Load Balancers": "Distributes traffic across servers to prevent overload.",
+      "Bundled Managed Services": "Includes monitoring, backup, and patching in one package."
+    };
+
+    const tags = {
+      "DRaaS": ["Resilient", "Secure"],
+      "Colocation with Redundancy": ["Secure", "Reliable"],
+      "Managed Services": ["Low Maintenance", "Cost Efficient"],
+      "IaaS": ["Scalable", "Flexible"],
+      "Hybrid IT": ["Flexible", "Strategic"],
+      "Private Cloud": ["Secure", "Controlled"],
+      "Secure Colocation": ["Compliant", "Secure"],
+      "Managed Security Services": ["Secure", "Proactive"],
+      "Edge Data Centers": ["Fast", "Proximity"],
+      "CDN": ["Fast", "Global"],
+      "Load Balancers": ["Reliable", "Optimized"],
+      "Bundled Managed Services": ["Convenient", "Efficient"]
     };
 
     const solutionMap = {
-      uptime: { solutions: ["DRaaS", "Colocation with Redundancy"], note: "High availability and recovery plans reduce business risk." },
-      overhead: { solutions: ["Managed Services", "IaaS"], note: "Offloads infrastructure ops to Flexential experts." },
-      scalability: { solutions: ["Hybrid IT", "Private Cloud"], note: "Enables elastic scaling without overbuying infrastructure." },
-      compliance: { solutions: ["Secure Colocation", "Managed Security Services"], note: "Supports HIPAA, SOC 2, PCI with built-in safeguards." },
-      performance: { solutions: ["Edge Data Centers", "CDN", "Load Balancers"], note: "Brings compute closer to users, improving performance." },
-      budgeting: { solutions: ["IaaS", "Bundled Managed Services"], note: "Usage-based or flat rate options support cost predictability." },
-      healthcare: { solutions: ["Secure Colocation", "DRaaS"], note: "Supports HIPAA and patient data protection standards." },
-      saas: { solutions: ["IaaS", "Hybrid IT"], note: "Supports scalable delivery and multi-tenant efficiency." },
-      retail: { solutions: ["CDN", "Edge Data Centers"], note: "Enhances customer experience with lower latency." },
-      hipaa: { solutions: ["Secure Colocation", "Managed Security Services"], note: "HIPAA requires encrypted and monitored environments." },
-      pci: { solutions: ["Secure Colocation", "DRaaS"], note: "PCI DSS mandates secure infrastructure and auditability." },
-      now: { solutions: ["DRaaS", "Managed Services"], note: "Immediate needs require low-lift, high-impact deployment." },
-      planning: { solutions: ["Hybrid IT", "Private Cloud"], note: "Ideal for staged migrations and long-term growth." }
+      uptime: { solutions: ["DRaaS", "Colocation with Redundancy"] },
+      overhead: { solutions: ["Managed Services", "IaaS"] },
+      scalability: { solutions: ["Hybrid IT", "Private Cloud"] },
+      compliance: { solutions: ["Secure Colocation", "Managed Security Services"] },
+      performance: { solutions: ["Edge Data Centers", "CDN", "Load Balancers"] },
+      budgeting: { solutions: ["IaaS", "Bundled Managed Services"] },
+      healthcare: { solutions: ["Secure Colocation", "DRaaS"] },
+      saas: { solutions: ["IaaS", "Hybrid IT"] },
+      retail: { solutions: ["CDN", "Edge Data Centers"] },
+      hipaa: { solutions: ["Secure Colocation", "Managed Security Services"] },
+      pci: { solutions: ["Secure Colocation", "DRaaS"] },
+      now: { solutions: ["DRaaS", "Managed Services"] },
+      planning: { solutions: ["Hybrid IT", "Private Cloud"] }
     };
 
     function matchSolutions() {
@@ -170,22 +169,26 @@
       const urgency = document.getElementById('urgency').value;
 
       const filters = [...selectedGoals, industry, compliance, urgency].filter(Boolean);
-      const allSolutions = {}, notes = [];
+      const allSolutions = {};
 
       filters.forEach(key => {
         const entry = solutionMap[key];
         if (entry) {
           entry.solutions.forEach(s => allSolutions[s] = (allSolutions[s] || 0) + 1);
-          notes.push(entry.note);
         }
       });
 
       const sorted = Object.keys(allSolutions).sort((a,b)=>allSolutions[b]-allSolutions[a]);
-      document.getElementById('solutionList').innerHTML = sorted.map(s =>
-        `<details><summary>${s}</summary><div class="explanation">${explainers[s] || 'More info coming soon.'}</div></details>`
-      ).join('');
-      document.getElementById('noteList').innerHTML = [...new Set(notes)].map(n=>`<li>${n}</li>`).join('');
-      document.getElementById('results').style.display = filters.length ? 'block' : 'none';
+      const container = document.getElementById('tiles');
+      container.innerHTML = sorted.map(sol => `
+        <div class="tile">
+          <h3>${sol}</h3>
+          <p>${explainers[sol] || ''}</p>
+          <div class="tags">
+            ${(tags[sol] || []).map(t => `<span class="tag">${t}</span>`).join('')}
+          </div>
+        </div>
+      `).join('');
     }
   </script>
 </body>
